@@ -1,5 +1,3 @@
-require 'colorize'
-
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
