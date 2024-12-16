@@ -17,24 +17,23 @@ def blink(stone)
   end
 end
 
-def process(stones, step, number_of_steps)
-  return stones.count if step == number_of_steps
+def process(stones, remaining_steps)
+  return stones.count if remaining_steps.zero?
   if stones.count == 1
-    remaining_steps = number_of_steps - step
     cached = @memo[stones.first] || Hash.new
     if cached.key?(remaining_steps)
       @hits += 1
       return cached[remaining_steps]
     end
     new_stones = blink(stones.first)
-    cached[remaining_steps] = process(new_stones, step + 1, number_of_steps)
+    cached[remaining_steps] = process(new_stones, remaining_steps - 1)
     @memo[stones.first] = cached
     return cached[remaining_steps]
   end
-  process(stones[0...1], step, number_of_steps) + process(stones[1...stones.count], step, number_of_steps)
+  process(stones[0...1], remaining_steps) + process(stones[1...stones.count], remaining_steps)
 end
 
-res = process(stones, 0, 75)
+res = process(stones, 75)
 
 p "values cached: #{@memo.values.sum { _1.values.count }}"
 p "cache hits: #{@hits}"
