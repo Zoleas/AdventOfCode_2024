@@ -9,7 +9,7 @@ register_a, register_b, register_c = registers.split("\n").map do |line|
 end
 code_bytes = program.split(': ').last.split(',').map(&:to_i)
 
-a_bits = Array.new(53) { nil }
+a_bits = Array.new(7 + 3 * code_bytes.count) { nil }
 (0...7).each { a_bits[_1] = 0 }
 
 def check(bits, out, xor)
@@ -21,47 +21,45 @@ def check(bits, out, xor)
   true
 end
 
-def create_possibility(template, range, out, xor)
-  res = template.dup
-  out = out ^ xor
-  out_bits = [out >> 2 % 2, out >> 1 % 2, out % 2]
-  range.each_with_index { |res_index, out_index| res[res_index] = out_bits[out_index] }
-end
-
-COMBINATIONS = [
-  { value: 0b000, range: (2..4), xor: 0b011 },
-  { value: 0b001, range: (3..5), xor: 0b010 },
-  { value: 0b010, range: (0..2), xor: 0b001 },
-]
-
-def try(a_bits, step, out)
-  possiblilities = []
+def try(b, bits, step, out)
+  # p "Trying b: #{b}"
+  b_1 = b^5
   offset = step * 3
-  first_bits = a_bits[offset...offset + 10]
-  possiblilities << create_possibility(a_bits, (2..4), out, 0b011) if check(first_bits[2..4], out, 0b011)
+  c_range_end = 10 - b_1 + offset
+  c_range = ((c_range_end - 3)...c_range_end)
+  possible_c = bits[c_range]
+  c = out^6^b^5
+  c_bits = [(c >> 2) % 2, (c >> 1) % 2, c % 2]
+  return nil if possible_c[0] == 1 - c_bits[0]
+  return nil if possible_c[1] == 1 - c_bits[1]
+  return nil if possible_c[2] == 1 - c_bits[2]
+  res = bits.dup
+  c_range.each_with_index { |res_index, c_index| res[res_index] = c_bits[c_index] }
+  b_bits = [(b >> 2) % 2, (b >> 1) % 2, b % 2]
+  b_range = ((offset + 7)...(offset + 10))
+  possible_b = res[b_range]
+  return nil if possible_b[0] == 1 - b_bits[0]
+  return nil if possible_b[1] == 1 - b_bits[1]
+  return nil if possible_b[2] == 1 - b_bits[2]
+  b_range.each_with_index { |res_index, b_index| res[res_index] = b_bits[b_index] }
+  # p "Works by putting #{c_bits} to indexes #{c_range.to_a} and #{b_bits} to indexes #{b_range.to_a}"
+  res
 end
 
+def process(a_bits, code_bytes)
+  possiblilities = [a_bits]
+  (0...code_bytes.count).each do |step|
+    # p "Step: #{step + 1}, int to print #{code_bytes[code_bytes.count - step - 1]}"
+    possiblilities = 
+      possiblilities.map do |p|
+        # p "For bits starting with #{p.compact}"
+        (0..7).reduce(Array.new) { |res, b| res << try(b, p, step, code_bytes[code_bytes.count - step - 1]); res }
+      end.flatten(1).compact
+  end
+  possiblilities
+end
 
+possiblilities = process(a_bits, code_bytes)
 
-
-# A = CD EFGH IJKL
-
-# B = A % 8   => 0000 0JKL
-# B' = B ^ 5 = B ^ 101   => 0000 0!JK!L
-# C = A / 2**B => ?     => C = A shift B
-# A = A / 8             => A' = A shift 3
-# B'' = B' ^ C     =>      => B = B ^ A shift B => A = xxxx 110 xxx{B}
-# B''' = B'' ^ 6     => … XXXX X110
-# B''' % 8 = 0     => … XXXX X000
-# A = 0
-
-
-
-# JKL = 0 = 000   =>   B' = 101 = 5   =>   C = EFG   =>   B'' = !EF!G   =>   B''' = E!F!G  =>   E = 0, F = G = 1
-# JKL = 1 = 001   =>   B' = 100 = 4   =>   C = FGH   =>   B'' = !FGH    =>   B''' = F!GH   =>   F = H = 0, G = 1
-# JKL = 2 = 010   =>   B' = 111 = 7   =>   C = CDE   =>   B'' = !C!D!E  =>   B''' = CD!E   =>   C = D = 0, E = 1
-# JKL = 3 = 011   =>   B' = 110 = 6   =>   C = DEF   =>   B'' = !D!EF   =>   B''' = DEF    =>   D = E = F = 0
-# JKL = 4 = 100   =>   B' = 001 = 1   =>   C = I10   =>   B'' = I11     =>   B''' = !I01   =>   NON
-# JKL = 5 = 101   =>   B' = 000 = 0   =>   C = 101   =>   B'' = 101     =>   B''' = 011    =>   NON
-# JKL = 6 = 110   =>   B' = 011 = 3   =>   C = GHI   =>   B'' = G!H!I   =>   B''' = !GH!I  =>   G = I = 1, H = 0
-# JKL = 7 = 111   =>   B' = 010 = 2   =>   C = HI1   =>   B'' = !H!I0   =>   B''' = HI0    =>   H = I = 0
+res_bit_string = possiblilities.min.map(&:to_s).join
+p "Final number #{res_bit_string.to_i(2)}"
