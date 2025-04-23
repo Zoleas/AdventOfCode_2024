@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -17,9 +19,11 @@ res = machines.reduce(0) do |sum, machine|
   possible_values = (0..100).filter_map do |a|
     a_x = a * button_a[0]
     next nil if a_x > target_x
+
     b, b_rest = (target_x - a_x).divmod(button_b[0])
     next nil unless b_rest.zero?
     next nil unless a * button_a[1] + b * button_b[1] == target_y
+
     [a, b]
   end
   possible_values.empty? ? sum : sum + possible_values.map { |a, b| 3 * a + b }.min

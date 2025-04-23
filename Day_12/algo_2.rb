@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
-@field = File.read(path).split.map{ _1.chars }
+@field = File.read(path).split.map(&:chars)
 regions = []
 @affected = Set.new
 
@@ -13,18 +15,16 @@ def find_region(from:)
   region = []
   stack = Set.new([from])
   visited = Set.new
-  while !stack.empty?
+  until stack.empty?
     e = stack.first
     stack.delete(e)
     visited << e
-    if @field[e[0]][e[1]] == plot
-      region << e
-      @affected << e
-      [[e[0] + 1, e[1]], [e[0] - 1, e[1]], [e[0], e[1] + 1], [e[0], e[1] - 1]].each do |(i, j)|
-        if !visited.include?([i, j]) && (0...@height).include?(i) && (0...@width).include?(j) 
-          stack << [i, j] 
-        end
-      end
+    next unless @field[e[0]][e[1]] == plot
+
+    region << e
+    @affected << e
+    [[e[0] + 1, e[1]], [e[0] - 1, e[1]], [e[0], e[1] + 1], [e[0], e[1] - 1]].each do |(i, j)|
+      stack << [i, j] if !visited.include?([i, j]) && (0...@height).include?(i) && (0...@width).include?(j)
     end
   end
   region
@@ -33,20 +33,21 @@ end
 (0...@height).each do |i|
   (0...@width).each do |j|
     next if @affected.include?([i, j])
+
     regions << find_region(from: [i, j])
-  end  
+  end
 end
 
 def price(region)
   rows = region.sort do |e1, e2|
     main_sort = e1[0] <=> e2[0]
     main_sort.zero? ? e1[1] <=> e2[1] : main_sort
-  end.group_by{ _1[0]}.values
+  end.group_by { _1[0] }.values
 
   columns = region.sort do |e1, e2|
     main_sort = e1[1] <=> e2[1]
     main_sort.zero? ? e1[0] <=> e2[0] : main_sort
-  end.group_by{ _1[1]}.values
+  end.group_by { _1[1] }.values
 
   sides = 0
 
@@ -64,13 +65,13 @@ def price(region)
       if region.include?([i - 1, j])
         linked_top = false
       else
-        t +=1 unless linked_top
+        t += 1 unless linked_top
         linked_top = true
       end
       if region.include?([i + 1, j])
         linked_bottom = false
       else
-        t +=1 unless linked_bottom
+        t += 1 unless linked_bottom
         linked_bottom = true
       end
       sub_sum + t
@@ -92,13 +93,13 @@ def price(region)
       if region.include?([i, j - 1])
         linked_left = false
       else
-        t +=1 unless linked_left
+        t += 1 unless linked_left
         linked_left = true
       end
       if region.include?([i, j + 1])
         linked_right = false
       else
-        t +=1 unless linked_right
+        t += 1 unless linked_right
         linked_right = true
       end
       sub_sum + t
@@ -108,6 +109,4 @@ def price(region)
   sides * region.count
 end
 
-
-p regions.sum { price(_1) }
-
+p(regions.sum { price(_1) })

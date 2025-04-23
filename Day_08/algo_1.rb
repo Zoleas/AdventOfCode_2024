@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -18,7 +20,7 @@ end
 
 antinodes = []
 
-antennas.values.each do |positions|
+antennas.each_value do |positions|
   (0...(positions.count - 1)).each do |i|
     ((i + 1)...positions.count).each do |j|
       a1 = positions[i]

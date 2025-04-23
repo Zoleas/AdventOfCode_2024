@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -6,6 +8,7 @@ operations = File.read(path).split("\n").map { |l| l.split(':').flat_map { _1.sp
 def resolvable?(total, current, values)
   return false if current > total
   return current == total if values.empty?
+
   resolvable?(total, current + values[0], values[1...values.count]) ||
     resolvable?(total, current * values[0], values[1...values.count]) ||
     resolvable?(total, (current.to_s + values[0].to_s).to_i, values[1...values.count])

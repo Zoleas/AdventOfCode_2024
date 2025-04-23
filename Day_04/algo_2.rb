@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -5,7 +7,7 @@ path = TEST ? 'example_input.txt' : 'input.txt'
 @width = @input[0].count
 @height = @input.count
 
-OFFSETS = [[1, 1], [1, -1], [-1, -1], [-1, 1]]
+OFFSETS = [[1, 1], [1, -1], [-1, -1], [-1, 1]].freeze
 
 def search(x, y, xOffset, yOffset)
   x1 = x + xOffset
@@ -15,7 +17,8 @@ def search(x, y, xOffset, yOffset)
   return 0 unless (0...@width).include?(x1) && (0...@height).include?(y1)
   return 0 unless (0...@width).include?(x2) && (0...@height).include?(y2)
   return 0 unless @input[y1][x1] == 'M' && @input[y2][x2] == 'S'
-  return 1
+
+  1
 end
 
 res = 0

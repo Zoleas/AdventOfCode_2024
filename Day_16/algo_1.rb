@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rb_heap'
 
 TEST = false
@@ -22,7 +24,7 @@ map.each_with_index do |line, y|
   end
 end
 
-to_do = Heap.new{ |a, b| a.first < b.first }
+to_do = Heap.new { |a, b| a.first < b.first }
 to_do << [0, start[0], start[1], Direction::RIGHT]
 
 def neighbor(y, x, dir)
@@ -42,12 +44,13 @@ res = 0
 
 loop do
   current_value, y, x, dir = to_do.pop
-  if [y, x] == finish
+  if finish == [y, x]
     res = current_value
     break
   end
   existing_value = already_computed[y][x][dir]
   next if !existing_value.nil? && existing_value <= current_value
+
   already_computed[y][x][dir] = current_value
   forward = neighbor(y, x, dir)
   to_do << [current_value + 1, forward[0], forward[1], dir] unless map[forward[0]][forward[1]] == '#'

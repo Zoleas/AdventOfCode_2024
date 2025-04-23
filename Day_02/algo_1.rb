@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -8,6 +10,7 @@ res = reports.select do |report|
   end
   next false unless differences.all?(&:positive?) || differences.all?(&:negative?)
   next false unless differences.all? { |d| d.abs <= 3 }
+
   true
 end.count
 p res

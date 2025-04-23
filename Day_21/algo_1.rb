@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
 codes = File.read(path).split("\n")
 
 module Direction
-  UP = '^'.freeze
-  LEFT = '<'.freeze
-  DOWN = 'v'.freeze
-  RIGHT = '>'.freeze
+  UP = '^'
+  LEFT = '<'
+  DOWN = 'v'
+  RIGHT = '>'
 end
 
 numeric_pad = {
@@ -22,7 +24,7 @@ numeric_pad = {
   '3' => [2, 2],
   '0' => [3, 1],
   'A' => [3, 2],
-  'panic' => [3, 0],
+  'panic' => [3, 0]
 }
 
 directional_pad = {
@@ -31,7 +33,7 @@ directional_pad = {
   Direction::DOWN => [1, 1],
   Direction::RIGHT => [1, 2],
   'A' => [0, 2],
-  'panic' => [0, 0],
+  'panic' => [0, 0]
 }
 
 def neighbor(y, x, dir)
@@ -49,17 +51,15 @@ end
 
 def path(start, finish, panic)
   return [''] if start == finish
+
   directions_needed = []
   directions_needed << Direction::UP if finish[0] < start[0]
   directions_needed << Direction::LEFT if finish[1] < start[1]
   directions_needed << Direction::DOWN if finish[0] > start[0]
   directions_needed << Direction::RIGHT if finish[1] > start[1]
-  directions_needed.reduce(Array.new) do |paths, dir|
+  directions_needed.each_with_object([]) do |dir, paths|
     next_button = neighbor(start[0], start[1], dir)
-    unless next_button == panic
-      paths << path(next_button, finish, panic).map { dir + _1 }
-    end
-    paths
+    paths << path(next_button, finish, panic).map { dir + _1 } unless next_button == panic
   end.flatten
 end
 
@@ -69,7 +69,7 @@ def translate(keypad, code)
   code.chars.each do |digit|
     new_paths = path(keypad[current], keypad[digit], keypad['panic'])
     paths = paths.flat_map do |path|
-      new_paths.map { path + _1 + 'A' }
+      new_paths.map { "#{path}#{_1}A" }
     end
     current = digit
   end
@@ -82,7 +82,7 @@ res = codes.map do |code|
   3.times do |i|
     keypad = i.zero? ? numeric_pad : directional_pad
     sequences = sequences.flat_map { |sequence| translate(keypad, sequence) }
-  p "Step #{i + 1} done"
+    p "Step #{i + 1} done"
   end
   shortest = sequences.min { |a, b| a.length <=> b.length }
   p "code: #{code} translated"

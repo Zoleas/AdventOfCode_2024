@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -41,6 +43,5 @@ p [
   map[0...(HEIGHT - 1) / 2].flat_map { |line| line[0...(WIDTH - 1) / 2] }.sum,
   map[0...(HEIGHT - 1) / 2].flat_map { |line| line[(WIDTH + 1) / 2...WIDTH] }.sum,
   map[(HEIGHT + 1) / 2...HEIGHT].flat_map { |line| line[0...(WIDTH - 1) / 2] }.sum,
-  map[(HEIGHT + 1) / 2...HEIGHT].flat_map { |line| line[(WIDTH + 1) / 2...WIDTH] }.sum,
+  map[(HEIGHT + 1) / 2...HEIGHT].flat_map { |line| line[(WIDTH + 1) / 2...WIDTH] }.sum
 ].reduce(1, &:*)
-

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rb_heap'
 
 TEST = true
@@ -9,7 +11,7 @@ towels = towels.split(', ')
 patterns = patterns.split("\n")
 max_towel_length = towels.map(&:length).max
 
-towels_hash = towels.reduce(Hash.new) do |hash, towel|
+towels_hash = towels.each_with_object({}) do |towel, hash|
   stripes = towel.chars
   leaf = hash
   stripes.each do |stripe|
@@ -17,7 +19,6 @@ towels_hash = towels.reduce(Hash.new) do |hash, towel|
     leaf = leaf[stripe]
   end
   leaf[:exist] = true
-  hash
 end
 
 def test(pattern, towels_hash, max_length)
@@ -28,6 +29,7 @@ def test(pattern, towels_hash, max_length)
     already_found[index] = (1..max_length_to_search).any? do |number_of_chars|
       rest_is_good = index - number_of_chars >= 0 ? already_found[index - number_of_chars] : true
       next false unless rest_is_good
+
       search = pattern_chars[(pattern_chars.count - index - 1)...(pattern_chars.count - index - 1 + number_of_chars)]
       found = towels_hash.dig(*search, :exist)
       found

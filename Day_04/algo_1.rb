@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -5,7 +7,7 @@ path = TEST ? 'example_input.txt' : 'input.txt'
 @width = @input[0].count
 @height = @input.count
 
-OFFSETS = [[0, 1], [1, 1], [1,0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
+OFFSETS = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]].freeze
 
 def search(suffix, x, y, xOffset, yOffset)
   # p "searching #{suffix} with xOffset: #{xOffset}, yOffset: #{yOffset}"
@@ -15,7 +17,8 @@ def search(suffix, x, y, xOffset, yOffset)
   return 0 unless @input[newY][newX] == suffix[0]
   # p "found #{suffix[0]} at [#{newX}, #{newY}]"
   return 1 if suffix.length == 1
-  return search(suffix[1, suffix.length - 1], newX, newY, xOffset, yOffset)
+
+  search(suffix[1, suffix.length - 1], newX, newY, xOffset, yOffset)
 end
 
 res = 0

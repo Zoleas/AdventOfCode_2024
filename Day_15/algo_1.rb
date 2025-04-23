@@ -1,4 +1,6 @@
-TEST = false
+# frozen_string_literal: true
+
+TEST = true
 path = TEST ? 'example_input.txt' : 'input.txt'
 
 module Direction
@@ -15,7 +17,6 @@ class Place
     CRATE = 'O'
     ROBOT = '@'
   end
-
 
   attr_accessor :type
 
@@ -58,14 +59,14 @@ class Place
     when Direction::LEFT
       @@map[@y][@x - 1]
     when Direction::DOWN
-      @@map[@y  + 1][@x]
+      @@map[@y + 1][@x]
     when Direction::RIGHT
       @@map[@y][@x + 1]
     end
   end
 
   def pushed_by?(other_type, direction)
-    pushed = 
+    pushed =
       case @type
       when Type::WALL
         false
@@ -83,6 +84,7 @@ class Place
 
   def gps_coordinates
     return 0 unless @type == Type::CRATE
+
     100 * @y + @x
   end
 

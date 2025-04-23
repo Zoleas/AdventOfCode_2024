@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -11,7 +13,7 @@ def correct?(rules, print)
       return false if rules.include?([print[j], print[i]])
     end
   end
-  return true
+  true
 end
 
 correct_prints = prints.select { |print| correct?(rules, print) }

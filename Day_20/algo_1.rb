@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -8,7 +10,7 @@ module Direction
   LEFT = 1
   DOWN = 2
   RIGHT = 3
-  ALL = [UP, LEFT, DOWN, RIGHT]
+  ALL = [UP, LEFT, DOWN, RIGHT].freeze
 end
 
 map = File.read(path).split("\n").map(&:chars)
@@ -42,29 +44,31 @@ end
 current = start
 path_values[start[0]][start[1]] = 0
 
-
 while current != finish
   Direction::ALL.each do |dir|
     forward = neighbor(current[0], current[1], dir)
-    if map[forward[0]][forward[1]] != '#' && path_values[forward[0]][forward[1]].nil?
-      path_values[forward[0]][forward[1]] = path_values[current[0]][current[1]] + 1
-      current = forward
-      break
-    end
+    next unless map[forward[0]][forward[1]] != '#' && path_values[forward[0]][forward[1]].nil?
+
+    path_values[forward[0]][forward[1]] = path_values[current[0]][current[1]] + 1
+    current = forward
+    break
   end
 end
 
-cheats = Hash.new { |hash, key| Array.new }
+cheats = Hash.new { |_hash, _key| [] }
 
 path_values.each_with_index do |line, y|
   line.each_with_index do |time, x|
     next if time.nil?
+
     Direction::ALL.each do |dir1|
       move1 = neighbor(y, x, dir1)
       next unless y_range.include?(move1[0]) && x_range.include?(move1[1]) && path_values[move1[0]][move1[1]].nil?
+
       Direction::ALL.each do |dir2|
         move2 = neighbor(move1[0], move1[1], dir2)
         next unless y_range.include?(move2[0]) && x_range.include?(move2[1]) && !path_values[move2[0]][move2[1]].nil?
+
         time_saved = path_values[move2[0]][move2[1]] - time - 2
         cheats[time_saved] = cheats[time_saved] << [move1, move2] if time_saved.positive?
       end
@@ -72,9 +76,8 @@ path_values.each_with_index do |line, y|
   end
 end
 
-number_of_good_cheats = cheats.keys.filter {_1 >= THRESHOLD}.reduce(0) do |sum, k|
+number_of_good_cheats = cheats.keys.filter { _1 >= THRESHOLD }.reduce(0) do |sum, k|
   sum + cheats[k].count
 end
 
 puts "There are #{number_of_good_cheats} cheats that saves more than #{THRESHOLD} picoseconds."
-

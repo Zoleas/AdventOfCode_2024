@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rb_heap'
 
 TEST = false
@@ -8,7 +10,7 @@ module Direction
   LEFT = 1
   DOWN = 2
   RIGHT = 3
-  ALL = [UP, LEFT, DOWN, RIGHT]
+  ALL = [UP, LEFT, DOWN, RIGHT].freeze
 end
 
 map = File.read(path).split("\n").map(&:chars)
@@ -23,7 +25,7 @@ map.each_with_index do |line, y|
   end
 end
 
-to_do = Heap.new{ |a, b| a.first < b.first }
+to_do = Heap.new { |a, b| a.first < b.first }
 to_do << [0, start[0], start[1], Direction::RIGHT, [start[0], start[1], Direction::RIGHT]]
 
 def neighbor(y, x, dir)
@@ -43,9 +45,11 @@ loop do
   current_value, y, x, dir, from = to_do.pop
   existing_value = already_computed[y][x][dir]
   next if !existing_value.nil? && existing_value[0] < current_value
+
   array = !existing_value.nil? && existing_value[0] == current_value ? existing_value : [current_value]
-  already_computed[y][x][dir] = [*array, from].uniq if current_value > 0
-  break if [y, x] == finish
+  already_computed[y][x][dir] = [*array, from].uniq if current_value.positive?
+  break if finish == [y, x]
+
   forward = neighbor(y, x, dir)
   new_from = [y, x, dir]
   to_do << [current_value + 1, forward[0], forward[1], dir, new_from] unless map[forward[0]][forward[1]] == '#'
@@ -56,11 +60,12 @@ end
 to_do = already_computed[finish[0]][finish[1]].compact.map { _1[1] }
 map[finish[0]][finish[1]] = 'O'
 
-while !to_do.empty?
+until to_do.empty?
   y, x, dir = to_do.pop
   computed = already_computed[y][x][dir]
   map[y][x] = 'O'
-  next if [y, x] == start
+  next if start == [y, x]
+
   computed[1...computed.count].each { |from| to_do << from }
 end
 

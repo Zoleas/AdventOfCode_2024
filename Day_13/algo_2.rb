@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -16,10 +18,13 @@ res = machines.reduce(0) do |sum, machine|
   button_b = machine[1]
   denom = button_b[1] * button_a[0] - button_b[0] * button_a[1]
   next sum if denom.zero?
+
   b, rest_b = (target_y * button_a[0] - target_x * button_a[1]).divmod(denom)
   next sum unless rest_b.zero?
+
   a, rest_a = (target_x - b * button_b[0]).divmod(button_a[0])
   next sum unless rest_a.zero?
+
   sum + 3 * a + b
 end
 

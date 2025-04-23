@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -7,13 +9,13 @@ codes = File.read(path).split("\n").map(&:to_i)
 
 def next_code(code)
   tmp = code << 6
-  code = code ^ tmp
-  code = code & PRUNE_MASK
+  code ^= tmp
+  code &= PRUNE_MASK
   tmp = code >> 5
-  code = code ^ tmp
-  code = code & PRUNE_MASK
+  code ^= tmp
+  code &= PRUNE_MASK
   tmp = code << 11
-  code = code ^ tmp
+  code ^= tmp
   code & PRUNE_MASK
 end
 

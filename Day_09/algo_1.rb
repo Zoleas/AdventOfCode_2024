@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -20,8 +22,10 @@ first_free_space = 0
 (1...disk.count).reverse_each do |index|
   char = disk[index]
   next if char == '.'
+
   new = disk[first_free_space...index].find_index('.')
   break if new.nil?
+
   first_free_space += new
   disk[first_free_space], disk[index] = disk[index], disk[first_free_space]
 end

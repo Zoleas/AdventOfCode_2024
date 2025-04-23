@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
-input = File.read(path).chars
+map = File.read(path).split("\n").map(&:chars)
+height = map.count
+width = map.first.count
 
 antennas = {}
 
@@ -16,7 +20,7 @@ end
 
 antinodes = []
 
-antennas.values.each do |positions|
+antennas.each_value do |positions|
   (0...(positions.count - 1)).each do |i|
     ((i + 1)...positions.count).each do |j|
       a1 = positions[i]
@@ -37,8 +41,6 @@ antennas.values.each do |positions|
     end
   end
 end
-
-
 
 antinodes = antinodes.uniq
 

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
 stones = File.read(path).split.map(&:to_i)
 
-@memo = Hash.new
+@memo = {}
 @hits = 0
 
 def blink(stone)
@@ -19,8 +21,9 @@ end
 
 def process(stones, remaining_steps)
   return stones.count if remaining_steps.zero?
+
   if stones.count == 1
-    cached = @memo[stones.first] || Hash.new
+    cached = @memo[stones.first] || {}
     if cached.key?(remaining_steps)
       @hits += 1
       return cached[remaining_steps]

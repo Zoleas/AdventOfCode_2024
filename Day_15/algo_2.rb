@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'colorize'
 
-TEST = false
+TEST = true
 path = TEST ? 'example_input.txt' : 'input.txt'
 
 module Direction
@@ -19,7 +21,6 @@ class Place
     CRATE_RIGHT = ']'
     ROBOT = '@'
   end
-
 
   attr_accessor :type
 
@@ -77,7 +78,7 @@ class Place
     when Direction::LEFT
       @@map[@y][@x - 1]
     when Direction::DOWN
-      @@map[@y  + 1][@x]
+      @@map[@y + 1][@x]
     when Direction::RIGHT
       @@map[@y][@x + 1]
     end
@@ -103,7 +104,7 @@ class Place
     check_other_half &= [Direction::UP, Direction::DOWN].include?(direction) && [Type::CRATE_LEFT, Type::CRATE_RIGHT].include?(@type)
     if check_other_half
       other = @type == Type::CRATE_LEFT ? neighbour(Direction::RIGHT) : neighbour(Direction::LEFT)
-      self.push!(other_type, direction, check_other_half: false)
+      push!(other_type, direction, check_other_half: false)
       other.push!(Type::EMPTY, direction, check_other_half: false)
       return
     elsif @type != Type::EMPTY
@@ -115,6 +116,7 @@ class Place
 
   def gps_coordinates
     return 0 unless @type == Type::CRATE_LEFT
+
     100 * @y + @x
   end
 

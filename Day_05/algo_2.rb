@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -11,7 +13,7 @@ def correct?(rules, print)
       return false if rules.include?([print[j], print[i]])
     end
   end
-  return true
+  true
 end
 
 def correct!(rules, print)
@@ -22,7 +24,7 @@ def correct!(rules, print)
   end
 end
 
-corrected_prints = prints.select { !correct?(rules, _1) }.each { correct!(rules, _1) }
+corrected_prints = prints.reject { correct?(rules, _1) }.each { correct!(rules, _1) }
 
 res = corrected_prints.sum { _1[(_1.count - 1) / 2] }
 p res

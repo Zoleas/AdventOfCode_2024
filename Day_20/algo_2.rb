@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -9,7 +11,7 @@ module Direction
   LEFT = 1
   DOWN = 2
   RIGHT = 3
-  ALL = [UP, LEFT, DOWN, RIGHT]
+  ALL = [UP, LEFT, DOWN, RIGHT].freeze
 end
 
 map = File.read(path).split("\n").map(&:chars)
@@ -43,45 +45,45 @@ end
 current = start
 path_values[start[0]][start[1]] = 0
 
-
 while current != finish
   Direction::ALL.each do |dir|
     forward = neighbor(current[0], current[1], dir)
-    if map[forward[0]][forward[1]] != '#' && path_values[forward[0]][forward[1]].nil?
-      path_values[forward[0]][forward[1]] = path_values[current[0]][current[1]] + 1
-      current = forward
-      break
-    end
+    next unless map[forward[0]][forward[1]] != '#' && path_values[forward[0]][forward[1]].nil?
+
+    path_values[forward[0]][forward[1]] = path_values[current[0]][current[1]] + 1
+    current = forward
+    break
   end
 end
 
-cheats = Hash.new { |hash, key| Set.new }
+cheats = Hash.new { |_hash, _key| Set.new }
 
 path_values.each_with_index do |line, y|
   line.each_with_index do |time, x|
     next if time.nil?
+
     tmp = 0
     ((y - MAX_CHEAT_TIME)..(y + MAX_CHEAT_TIME)).each do |end_y|
       ((x - MAX_CHEAT_TIME)..(x + MAX_CHEAT_TIME)).each do |end_x|
         next unless y_range.include?(end_y) && x_range.include?(end_x) && !path_values[end_y][end_x].nil?
+
         distance = (end_y - y).abs + (end_x - x).abs
-        if (2..MAX_CHEAT_TIME).include?(distance) && map[end_y][end_x] != '#'
-          tmp += 1
-          time_saved = path_values[end_y][end_x] - time - distance
-          cheats[time_saved] = cheats[time_saved] << [[y, x], [end_y, end_x]] if time_saved.positive?
-        end
+        next unless (2..MAX_CHEAT_TIME).include?(distance) && map[end_y][end_x] != '#'
+
+        tmp += 1
+        time_saved = path_values[end_y][end_x] - time - distance
+        cheats[time_saved] = cheats[time_saved] << [[y, x], [end_y, end_x]] if time_saved.positive?
       end
     end
   end
 end
 
-number_of_good_cheats = cheats.keys.filter {_1 >= THRESHOLD}.reduce(0) do |sum, k|
+number_of_good_cheats = cheats.keys.filter { _1 >= THRESHOLD }.reduce(0) do |sum, k|
   sum + cheats[k].count
 end
 
-cheats.keys.sort.filter {_1 >= THRESHOLD}.each do |k|
+cheats.keys.sort.filter { _1 >= THRESHOLD }.each do |k|
   puts "There are #{cheats[k].count} cheats that save #{k} picoseconds."
 end
 
 puts "There are #{number_of_good_cheats} cheats that saves more than #{THRESHOLD} picoseconds."
-

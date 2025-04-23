@@ -1,18 +1,18 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
-
 
 connections = File.read(path).split("\n").map { _1.split('-') }
 
 class Computer
-  attr_accessor :name
-  attr_accessor :connected_computers
+  attr_accessor :name, :connected_computers
 
   def initialize(name)
     @name = name
     @connected_computers = Set.new
   end
-  
+
   def ==(other)
     other.is_a? Computer and @name == other.name
   end
@@ -44,14 +44,15 @@ class Computer
   end
 
   def self.connect(comp1, comp2)
-    comp1.connect_to(comp2)   
-    comp2.connect_to(comp1)   
+    comp1.connect_to(comp2)
+    comp2.connect_to(comp1)
   end
 
   def self.password_by_building_sets(sets, computers)
     puts "#{sets.count} sets of #{sets.first.count}"
     return sets.first.map(&:name).sort.join(',') if sets.count == 1
     return 'FUCK' if sets.empty?
+
     bigger_sets = Set[]
     sets.each do |set|
       computers.each do |computer|
@@ -63,7 +64,7 @@ class Computer
 end
 
 def build(connections)
-  computers = Hash.new
+  computers = {}
   connections.each do |connection|
     name1 = connection[0]
     comp1 = computers[name1] || Computer.new(name1)

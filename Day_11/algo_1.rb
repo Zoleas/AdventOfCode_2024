@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -19,7 +21,7 @@ def blink(stones)
   new_stones
 end
 
-25.times do |i|
+25.times do |_i|
   stones = blink(stones)
 end
 

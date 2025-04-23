@@ -1,20 +1,22 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
 PRUNE_MASK = 0b111111111111111111111111
-PRUNE_MODULO = 16777216
+PRUNE_MODULO = 16_777_216
 
 codes = File.read(path).split("\n").map(&:to_i)
 
 def next_code(code)
   tmp = code << 6
-  code = code ^ tmp
-  code = code & PRUNE_MASK
+  code ^= tmp
+  code &= PRUNE_MASK
   tmp = code >> 5
-  code = code ^ tmp
-  code = code & PRUNE_MASK
+  code ^= tmp
+  code &= PRUNE_MASK
   tmp = code << 11
-  code = code ^ tmp
+  code ^= tmp
   code & PRUNE_MASK
 end
 
@@ -35,15 +37,15 @@ def compute_price_diffs(codes)
 end
 
 def compute_sequences(prices, diffs)
-  sequences = Hash.new
+  sequences = {}
   (4...prices.count).each do |i|
-    key = "#{diffs[i-3]}#{diffs[i-2]}#{diffs[i-1]}#{diffs[i]}"
+    key = "#{diffs[i - 3]}#{diffs[i - 2]}#{diffs[i - 1]}#{diffs[i]}"
     sequences[key] = prices[i] unless sequences.key?(key)
   end
   sequences
 end
 
-puts "Computing sequences..."
+puts 'Computing sequences...'
 
 sequences = codes.map do |code|
   new_codes = compute_codes(code, 2001)
@@ -51,7 +53,7 @@ sequences = codes.map do |code|
   compute_sequences(prices, diffs)
 end
 
-puts "Sequences computed"
+puts 'Sequences computed'
 
 all_keys = sequences.flat_map(&:keys).uniq
 
@@ -63,6 +65,6 @@ values = all_keys.map do |key|
   end
 end
 
-puts "Done"
+puts 'Done'
 
 puts values.max

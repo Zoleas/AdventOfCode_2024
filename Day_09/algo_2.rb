@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST = false
 path = TEST ? 'example_input.txt' : 'input.txt'
 
@@ -16,17 +18,12 @@ input.each do |value|
   is_free_space = !is_free_space
 end
 
-
 file_index = disk.count - 1
-while file_index > 0
-  while disk[file_index] == '.'
-    file_index -= 1
-  end
+while file_index.positive?
+  file_index -= 1 while disk[file_index] == '.'
   file_end_index = file_index
   char = disk[file_index]
-  while disk[file_index - 1] == char
-    file_index -= 1
-  end
+  file_index -= 1 while disk[file_index - 1] == char
   file_size = file_end_index - file_index
   free_space_index = 0
   while free_space_index < file_index
@@ -50,6 +47,7 @@ end
 
 res = disk.each_with_index.reduce(0) do |sum, (char, index)|
   next sum if char == '.'
+
   sum + char * index
 end
 
